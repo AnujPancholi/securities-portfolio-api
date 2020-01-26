@@ -7,3 +7,4 @@ test
 /.netlify
 /functions
 config-local.js
+.env
