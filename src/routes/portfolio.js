@@ -126,6 +126,19 @@ portfolio.get('/holdings',async(req,res,next) => {
 })
 
 
+
+const addReturnsToSecurityEntry = (__securityEntry,__totalReturnsObj) => new Promise((resolve,reject) => {
+	try{
+		let currentPrice = await getCurrentListedPrice(__securityEntry.details._id);
+		__securityEntry.returns = (currentPrice - __securityEntry.average_buy_price)*__securityEntry.quantity;
+		__totalReturnsObj.value+=__securityEntry.returns;
+		resolve(true);
+	}catch(e){
+		__securityEntry.returns = null;
+		resolve(false);
+	}
+}) 
+
 portfolio.get('/returns/:portfolioId',async(req,res,next) => {
 	const response = {
 		code: 500,
@@ -146,13 +159,20 @@ portfolio.get('/returns/:portfolioId',async(req,res,next) => {
 				portfolioId: portfolioId
 			},404);
 		}
-		let totalReturns = 0;
-		portfolioObj.securities.forEach(securityEntry => {
-			securityEntry.returns = (getCurrentListedPrice(securityEntry.details._id)-securityEntry.average_buy_price)*securityEntry.quantity;
-			totalReturns+=securityEntry.returns;
-		})
 
-		portfolioObj.total_returns = totalReturns;
+
+		let totalReturnsObj = {
+			value: 0
+		}
+		let returnsCalculationResult = await Promise.all(portfolioObj.securities.map(securityEntry => addReturnsToSecurityEntry(securityEntry,totalReturnsObj)));
+		portfolioObj.total_returns = totalReturnsObj.value;
+		// let totalReturns = 0;
+		// portfolioObj.securities.forEach(securityEntry => {
+		// 	securityEntry.returns = (getCurrentListedPrice(securityEntry.details._id)-securityEntry.average_buy_price)*securityEntry.quantity;
+		// 	totalReturns+=securityEntry.returns;
+		// })
+		// portfolioObj.total_returns = totalReturns;
+
 
 		response.code=200;
 		response.payload.success=true;
