@@ -65,7 +65,7 @@ portfolio.get('/holdings',async(req,res,next) => {
 
 	try{
 		let portfolio = await req.db.collection("portfolios").findOne({
-			_id: db.getObjectId(portfolioId)
+			_id: req.db.getObjectId(portfolioId)
 		});
 		if(!portfolio){
 			throw new ExtendedError("PORTFOLIO NOT FOUND",{
