@@ -309,7 +309,7 @@ trade.get('/get',async(req,res,next) => {
 		}
 	}
 
-	const tradesList = null;
+	let tradesList = null;
 	try{
 		let tradesQueryObject = {};
 		if(req.query.portfolioId){
