@@ -2,6 +2,7 @@
 
 const portfolio = require('express').Router();
 const ExtendedError = require('../lib/extendedError.js');
+const {getCurrentListedPrice: getCurrentListedPrice} = require('../lib/securitiesExchangeInterface.js');
 
 
 portfolio.get('/get/:portfolioId',async(req,res,next) => {
@@ -124,7 +125,7 @@ portfolio.get('/returns/:portfolioId',async(req,res,next) => {
 		}
 		let totalReturns = 0;
 		portfolioObj.securities.forEach(securityEntry => {
-			securityEntry.returns = (100-securityEntry.average_buy_price)*securityEntry.quantity;
+			securityEntry.returns = (getCurrentListedPrice(securityEntry.details._id)-securityEntry.average_buy_price)*securityEntry.quantity;
 			totalReturns+=securityEntry.returns;
 		})
 
