@@ -4,7 +4,7 @@ const portfolio = require('express').Router();
 const ExtendedError = require('../lib/extendedError.js');
 
 
-portfolio.get('/:portfolioId',async(req,res,next) => {
+portfolio.get('/get/:portfolioId',async(req,res,next) => {
 	const response = {
 		code: 500,
 		payload: {

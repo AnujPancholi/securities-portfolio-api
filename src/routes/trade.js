@@ -120,7 +120,7 @@ const fetchSecurityFromDb = (__securityId,__db) => new Promise(async(resolve,rej
 	}
 })
 
-trade.post('/:type',async(req,res,next) => {
+trade.post('/place/:type',async(req,res,next) => {
 	const response = {
 		code: 500,
 		payload: {
