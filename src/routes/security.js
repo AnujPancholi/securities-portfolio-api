@@ -42,7 +42,7 @@ security.get('/get',async(req,res,next) => {
 		securitiesList = await req.db.collection("securities").find(securitiesQueryFilter).toArray();
 
 		response.code=200;
-		response.payload.success = [];
+		response.payload.success = true;
 		response.payload.data = securitiesList;
 
 	}catch(e){
