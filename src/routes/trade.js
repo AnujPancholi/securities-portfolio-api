@@ -299,5 +299,68 @@ trade.post('/place/:type',async(req,res,next) => {
 })
 
 
+trade.get('/get',async(req,res,next) => {
+	const response = {
+		code: 500,
+		payload: {
+			success: false,
+			data: null,
+			error: null
+		}
+	}
+
+	const tradesList = null;
+	try{
+		let tradesQueryObject = {};
+		if(req.query.portfolioId){
+			tradesQueryObject.portfolioId = {
+				$in: req.query.portfolioId.replace(/\s/g,'').split(',').map(_id => req.db.getObjectId(_id))
+			}
+		}
+		if(req.query.securityId){
+			tradesQueryObject["security._id"] = {
+				$in: req.query.securityId.replace(/\s/g,'').split(',').map(_id => req.db.getObjectId(_id))
+			}	
+		}
+		if(req.query.type){
+			tradesQueryObject.type = {
+				$in: req.query.type.replace(/\s/g,'').split(',').map(type => type.toUpperCase())
+			}	
+		}
+		if(req.query.minQuantity){
+			let quantValue = parseInt(req.query.minQuantity);
+			if(quantValue>0){
+				tradesQueryObject.quantity = {
+					$gte: quantValue 
+				}
+			}
+		}
+
+		tradesList = await req.db.collection("trades").find(tradesQueryObject).toArray();
+
+		response.code(200);
+		response.payload.success=true;
+		response.payload.data = tradesList;
+
+	}catch(e){
+		console.error(`portfolio|get|ERROR|${e.message || "NA"}`,e);
+		if(e instanceof ExtendedError){
+			response.code = e.httpStatusCode;
+			response.payload.success=false;
+			response.payload.error = e.errorData;
+		} else {
+			response.code = 500;
+			response.payload.success=false;
+			response.payload.error = {
+				message: "INTERNAL SERVER ERROR"
+			}
+		}
+	}
+
+	res.status(response.code).send(response.payload);
+
+})
+
+
 
 module.exports = trade;

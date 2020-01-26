@@ -35,7 +35,7 @@ security.get('/get',async(req,res,next) => {
 
 		if(req.query.type){
 			securitiesQueryFilter.type = {
-				$in: req.query.type.replace(/\s/g,'').trim().split(',').map(ticker => ticker.toUpperCase())
+				$in: req.query.type.replace(/\s/g,'').trim().split(',').map(type => type.toUpperCase())
 			}	
 		}
 
