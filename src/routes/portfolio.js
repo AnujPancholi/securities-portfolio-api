@@ -127,7 +127,7 @@ portfolio.get('/holdings',async(req,res,next) => {
 
 
 
-const addReturnsToSecurityEntry = (__securityEntry,__totalReturnsObj) => new Promise((resolve,reject) => {
+const addReturnsToSecurityEntry = (__securityEntry,__totalReturnsObj) => new Promise(async(resolve,reject) => {
 	try{
 		let currentPrice = await getCurrentListedPrice(__securityEntry.details._id);
 		__securityEntry.returns = (currentPrice - __securityEntry.average_buy_price)*__securityEntry.quantity;
