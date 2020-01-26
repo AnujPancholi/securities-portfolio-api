@@ -80,8 +80,8 @@ portfolio.get('/holdings',async(req,res,next) => {
 		}
 
 		response.code = 200;
-		response.payload = portfolio.securities;
-		response.success = true;
+		response.payload.data = portfolio.securities;
+		response.payload.success = true;
 
 	}catch(e){
 		console.log(`portfolio|holdings|${portfolioId}|ERROR|${e.message || "NA"}`,e);
@@ -99,6 +99,58 @@ portfolio.get('/holdings',async(req,res,next) => {
 	}
 
 	res.status(response.code).send(response.payload);
+})
+
+
+portfolio.get('/returns/:portfolioId',async(req,res,next) => {
+	const response = {
+		code: 500,
+		payload: {
+			success: false,
+			data: null,
+			error: null
+		}
+	}
+
+	const portfolioId = req.params.portfolioId.trim();
+	try{
+		let portfolioObj = await req.db.collection("portfolios").findOne({
+			_id: req.db.getObjectId(portfolioId)
+		});
+		if(!portfolio){
+			throw new ExtendedError("PORTFOLIO NOT FOUND",{
+				portfolioId: portfolioId
+			},404);
+		}
+		let totalReturns = 0;
+		portfolioObj.securities.forEach(securityEntry => {
+			securityEntry.returns = (100-securityEntry.average_buy_price)*securityEntry.quantity;
+			totalReturns+=securityEntry.returns;
+		})
+
+		portfolioObj.total_returns = totalReturns;
+
+		response.code=200;
+		response.payload.success=true;
+		response.payload.data = portfolioObj;
+
+	}catch(e){
+		console.log(`portfolio|returns|${portfolioId}|ERROR|${e.message || "NA"}`,e);
+		if(e instanceof ExtendedError){
+			response.code = e.httpStatusCode;
+			response.payload.success=false;
+			response.payload.error = e.errorData;
+		} else {
+			response.code = 500;
+			response.payload.success=false;
+			response.payload.error = {
+				message: "INTERNAL SERVER ERROR"
+			}
+		}
+	}
+
+	res.status(response.code).send(response.payload);
+
 })
 
 
