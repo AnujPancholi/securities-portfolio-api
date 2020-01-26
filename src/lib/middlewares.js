@@ -8,7 +8,6 @@ let DB_GLOBAL = null;
 
 //function to validate bearer token (if it's found)
 const validateBearerToken = (token) => {
-	console.log(token,config.getSecret());
 	if(token===config.getSecret()){
 		return {
 			isSuccessful: true,
@@ -26,7 +25,7 @@ const validateBearerToken = (token) => {
 
 //middleware to perform auth for requests
 const performAuth = (req,res,next) => {
-	console.log(req.headers.authorization);
+	
 	const authHeaderValues = req.headers.authorization ? req.headers.authorization.split(' ') : null;
 	if(authHeaderValues && authHeaderValues[0]==="Bearer" && typeof(authHeaderValues[1])==="string"){
             const token = authHeaderValues[1];
