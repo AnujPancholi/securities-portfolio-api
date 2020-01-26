@@ -3,11 +3,19 @@
 const trade = require('express').Router();
 const ExtendedError = require('../lib/extendedError.js');
 
-// const ACCEPTED_TRADE_TYPES = ['BUY','SELL'];
+
+
+
+//defining trade operations such as BUY SELL as part of an object, with an execute function for each
+//this way, things can get done in one endpoint, lookup for the respective operation is O(n),
+//and new operations can be more easily accomodated by adding a new element in this object
 
 const TRADE_OPERATION = {
 	"BUY": {
 		execute: (tradeObj,portfolio) => {
+			//earlier I was fetching all the securities, but now, as you may see below, I have added a projection
+			//to only fetch the relevant security entry from the portfolio
+			//will change this later, because "If it ain't broke, don't fix it" (at least not till the next code review)
 			let portfolioSecurityEntry = portfolio.securities.find(entry => entry.details._id.toString()===tradeObj.security._id.toString());
 
 			let isNewSecurity = false;
@@ -38,6 +46,7 @@ const TRADE_OPERATION = {
 	},
 	"SELL": {
 		execute: (tradeObj,portfolio) => {
+			//please ref. to comment in BUY operation, "execute" function
 			let portfolioSecurityEntry = portfolio.securities.find(entry => entry.details._id.toString()===tradeObj.security._id.toString());
 			if(!portfolioSecurityEntry){
 				return {
@@ -84,6 +93,8 @@ const TRADE_OPERATION = {
 	},
 }
 
+
+//will do this many times, so let's make a function
 const fetchPortfolioFromDb = (__portfolioId,__db,__securityId) => new Promise(async(resolve,reject) => {
 	let portfolio = null;
 
@@ -220,7 +231,7 @@ trade.post('/place/:type',async(req,res,next) => {
 
 
 		let portfolioUpdateObject = {
-			//don't really need an IIFE here, but did it just to show if off I guess
+			//don't really need an IIFE here, but did it just to show it off I guess
 			...(() => {
 				if(!updatedPortfolioSecurityEntry){
 					return {
@@ -254,7 +265,6 @@ trade.post('/place/:type',async(req,res,next) => {
 
 		let portfolioUpdateFilter = {
 			_id: req.db.getObjectId(portfolio._id)
-			// "securities.details._id": req.db.getObjectId(security._id)
 		}
 		if(!tradeOperationExecutionResult.isNewSecurity){
 			portfolioUpdateFilter["securities.details._id"] = req.db.getObjectId(security._id);

@@ -22,6 +22,7 @@ security.get('/get',async(req,res,next) => {
 		if(req.query.id){
 			//chaining a whole bunch of functions just because
 			//remove any spaces, split by comma (in case multiple), convert to objectId
+			//have dealt with many clients using APIs who refuse to pass simple params properly
 			securitiesQueryFilter._id = {
 				$in: req.query.id.replace(/\s/g,'').trim().split(',').map(_id => req.db.getObjectId(_id))
 			}
