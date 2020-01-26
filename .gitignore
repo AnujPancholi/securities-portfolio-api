@@ -1,0 +1,9 @@
+/node_modules
+node_modules
+/test
+test
+/build
+/built-lambda
+/.netlify
+/functions
+config-local.js
