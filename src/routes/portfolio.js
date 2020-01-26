@@ -26,9 +26,32 @@ portfolio.get('/get/:portfolioId',async(req,res,next) => {
 			},404);
 		}
 
-		portfolioObj.trades = await req.db.collection("trades").find({
-			portfolioId: req.db.getObjectId(portfolioId)
-		}).sort({_id: -1}).toArray();
+		// portfolioObj.trades = await req.db.collection("trades").find({
+		// 	portfolioId: req.db.getObjectId(portfolioId)
+		// }).sort({_id: -1}).toArray();
+
+		let aggregatedTrades = await req.db.collection("trades").aggregate([{
+			$match: {
+				portfolioId: req.db.getObjectId(portfolioObj._id)
+			}
+		},{
+			$group: {
+				_id: '$security._id',
+				trades: {
+					$push: '$$ROOT'
+				}
+			}
+		}]).toArray()
+
+		let securityToTradesMap = aggregatedTrades.reduce((secToTrades,result) => {
+			secToTrades[result._id.toString()] = result.trades;
+			return secToTrades;
+		},{});
+
+		portfolioObj.securities.forEach(securityEntry => {
+			securityEntry.trades = securityToTradesMap[securityEntry.details._id.toString()];
+		})
+
 
 		response.payload.success=true;
 		response.payload.data=[portfolioObj];
