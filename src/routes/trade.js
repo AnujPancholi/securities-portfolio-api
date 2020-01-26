@@ -338,7 +338,7 @@ trade.get('/get',async(req,res,next) => {
 
 		tradesList = await req.db.collection("trades").find(tradesQueryObject).toArray();
 
-		response.code(200);
+		response.code=200;
 		response.payload.success=true;
 		response.payload.data = tradesList;
 
