@@ -6,5 +6,6 @@ test
 /built-lambda
 /.netlify
 /functions
+functions
 config-local.js
 .env
