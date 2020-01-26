@@ -166,12 +166,7 @@ portfolio.get('/returns/:portfolioId',async(req,res,next) => {
 		}
 		let returnsCalculationResult = await Promise.all(portfolioObj.securities.map(securityEntry => addReturnsToSecurityEntry(securityEntry,totalReturnsObj)));
 		portfolioObj.total_returns = totalReturnsObj.value;
-		// let totalReturns = 0;
-		// portfolioObj.securities.forEach(securityEntry => {
-		// 	securityEntry.returns = (getCurrentListedPrice(securityEntry.details._id)-securityEntry.average_buy_price)*securityEntry.quantity;
-		// 	totalReturns+=securityEntry.returns;
-		// })
-		// portfolioObj.total_returns = totalReturns;
+		
 
 
 		response.code=200;
