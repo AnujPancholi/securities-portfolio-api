@@ -84,13 +84,21 @@ const TRADE_OPERATION = {
 	},
 }
 
-const fetchPortfolioFromDb = (__portfolioId,__db) => new Promise(async(resolve,reject) => {
+const fetchPortfolioFromDb = (__portfolioId,__db,__securityId) => new Promise(async(resolve,reject) => {
 	let portfolio = null;
 
 	try{
+		let portfolioProjection = {};
+		if(__securityId){
+			portfolioProjection.securities = {
+				$elemMatch: {
+					'details._id': __db.getObjectId(__securityId)
+				}
+			}
+		}
 		portfolio = await __db.collection("portfolios").findOne({
 			_id: __db.getObjectId(__portfolioId)
-		});
+		},portfolioProjection);
 		resolve(portfolio);
 
 	}catch(e){
@@ -164,7 +172,7 @@ trade.post('/:type',async(req,res,next) => {
 
 
 		let [portfolio,security] = await Promise.all([
-			fetchPortfolioFromDb(req.body.portfolioId,req.db),
+			fetchPortfolioFromDb(req.body.portfolioId,req.db,req.body.securityId),
 			fetchSecurityFromDb(req.body.securityId,req.db)
 			]);
 		if(!portfolio){
@@ -217,7 +225,9 @@ trade.post('/:type',async(req,res,next) => {
 				if(!updatedPortfolioSecurityEntry){
 					return {
 						$pull: {
-							"securities.$.details._id": req.db.getObjectId(security._id)
+							"securities": {
+								"details._id": req.db.getObjectId(security._id)
+							}
 						},
 						$set: {
 							updatedAt: new Date()
