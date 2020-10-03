@@ -2,7 +2,10 @@
 
 This is an API that I built as a take-home task for a company in 24 hours.
 
+**NOTE:** I have implemented some crude auth which uses a static token, so you won't be able to just import the Postman collection and try it out.
+
 [Postman Docs](https://documenter.getpostman.com/view/4642320/SWT8hzLq)
+
 [Base URL (will not yield any result)](https://peaceful-hugle-67003a.netlify.com/.netlify/functions/app/)
 
 ## Tech Stack:
