@@ -1,6 +1,6 @@
 # Take-home Task
 
-This is an API that I built as a take-home task for a company in 24 hours.
+This is an API that I built as a take-home task for a company in 36 hours.
 
 **NOTE:** I have implemented some crude auth which uses a static token, so you won't be able to just import the Postman collection and try it out.
 
